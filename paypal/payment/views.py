@@ -3,44 +3,47 @@ from django.http import JsonResponse
 import json
 from .models import *
 
+
 # Create your views here.
 
 def simpleCheckout(request):
-
-	return render(request, 'payment/simple_checkout.html')
-
-
+    return render(request, 'payment/simple_checkout.html')
 
 
 def store(request):
-	products = Product.objects.all()
-	
-	context = {'products':products}
+    products = Product.objects.all()
 
-	return render(request, 'payment/store.html', context)
+    context = {'products': products}
+
+    return render(request, 'payment/store.html', context)
+
 
 def checkout(request, pk):
-	product = Product.objects.get(id = pk)
+    product = Product.objects.get(id=pk)
 
-	context = {'product': product}
+    context = {'product': product}
 
-	return render(request, 'payment/checkout.html', context)
+    return render(request, 'payment/checkout.html', context)
+
 
 def paymentComplete(request):
-	body = json.loads(request.body)
+    body = json.loads(request.body)
 
-	order = Order.objects.first()
+    # order = Order.objects.first()
+    #
+    # orderid = Order.objects.get(id=body['orderId'])
 
-	orderid = Order.objects.get(id = body['orderId'])
+    product = Product.objects.get(id=body['productId'])
 
-	product  = Product.objects.get(id = body['productId'])
+    order = Order.objects.create(
+        product=product
+    )
 
+    print('Body:', body)
+    response = {
+        'order_id': order.id,
+        'product_id': product.id,
+        'message': 'Payment Completed!'
+    }
 
-	Order.objects.create(
-		product = product
-		orderid = orderid
-		)
-
-	print('Body:', body)
-
-	return JsonResponse('Payment Completed!', safe=False)
+    return JsonResponse(response)
