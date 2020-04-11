@@ -1,6 +1,6 @@
 # Payment Integration in Django
 
-**Perquisites**
+**Pre-requisites**
 
 1. Install Python
     ```shell script
